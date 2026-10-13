@@ -1,0 +1,58 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Pixelate from '../components/Pixelate.astro';
+import Row from '../components/Row.astro';
+import { cv } from '../data/cv';
+---
+
+<Layout title="Hi, I'm Michael" description="IT manager who believes in an inclusive and accessible web">
+	<h1 class="flex flex-col gap-y-3">
+		<span>{cv.title}</span>
+		<small>{cv.name}</small>
+	</h1>
+
+	<Pixelate src={cv.picture.src} alt={cv.picture.alt} />
+
+	<section class="flex flex-col gap-y-3">
+		{cv.summary.map((paragraph) => <p set:html={paragraph} />)}
+	</section>
+
+	<section class="flex flex-col gap-y-3">
+		<h2>Work</h2>
+		{cv.experienceSummary.map((paragraph) => <p set:html={paragraph} />)}
+		<ol class="flex flex-col gap-y-2">
+			{cv.experience.map((job) => <Row title={job.position} label={job.company} meta={job.duration} />)}
+		</ol>
+	</section>
+
+	<section class="flex flex-col gap-y-3">
+		<h2>Education</h2>
+		<ol>
+			{
+				cv.education.map((school) => (
+					<li>
+						<h3 class="flex flex-col mb-1">
+							{school.institution}
+							<small>
+								{school.degree} - {school.graduationYear}
+							</small>
+						</h3>
+					</li>
+				))
+			}
+		</ol>
+	</section>
+
+	<section class="flex flex-col gap-y-3">
+		<h2>Find me on</h2>
+		<ul>
+			{
+				cv.contacts.map((contact) => (
+					<li>
+						<a href={contact.href}>{contact.label}</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+</Layout>

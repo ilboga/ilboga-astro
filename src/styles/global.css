@@ -1,0 +1,49 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Tokens from ilboga-front. --color-muted is Tailwind v3 gray-600: v4 redefines gray in oklch. */
+@theme {
+	--color-background: #f7f2ed;
+	--color-foreground: #171717;
+	--color-muted: #4b5563;
+	--font-sans: Helvetica, Arial, sans-serif;
+	--font-heading: var(--font-avenue), monospace;
+}
+
+@layer base {
+	body {
+		@apply bg-background text-foreground font-sans lg:text-lg;
+	}
+
+	h1 {
+		@apply font-heading font-bold text-[2rem];
+	}
+
+	h2 {
+		@apply font-heading font-bold text-[1.5rem];
+	}
+
+	h3 {
+		@apply font-heading font-bold text-[1.25rem];
+	}
+
+	a {
+		@apply text-foreground underline;
+	}
+}
+
+/* Markdown bodies use `prose`: keep its spacing, swap its grays for the ilboga tokens.
+   Unlayered on purpose, so it wins over the plugin's layered defaults. */
+.prose {
+	--tw-prose-body: var(--color-foreground);
+	--tw-prose-headings: var(--color-foreground);
+	--tw-prose-links: var(--color-foreground);
+	--tw-prose-bold: var(--color-foreground);
+	--tw-prose-counters: var(--color-muted);
+	--tw-prose-bullets: var(--color-muted);
+	--tw-prose-hr: var(--color-muted);
+	--tw-prose-quotes: var(--color-foreground);
+	--tw-prose-quote-borders: var(--color-muted);
+	--tw-prose-code: var(--color-foreground);
+	max-width: none;
+}

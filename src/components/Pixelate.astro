@@ -1,0 +1,80 @@
+---
+// Ported from the ilboga-front React component: the image is drawn as blocks of
+// its average color, coarse at rest and fine on hover or focus.
+interface Props {
+	src: string;
+	alt: string;
+	width?: number;
+	height?: number;
+}
+
+const { src, alt, width = 300, height = 400 } = Astro.props;
+---
+
+<figure data-pixelate data-src={src} tabindex="0" class="flex flex-col lg:w-1/2">
+	<canvas width={width} height={height} role="img" aria-label={alt} style="image-rendering: pixelated"></canvas>
+	<figcaption class="text-sm inline">{alt}</figcaption>
+</figure>
+
+<script>
+	const COARSE = 30;
+	const FINE = 5;
+
+	function draw(canvas: HTMLCanvasElement, source: CanvasRenderingContext2D, blockSize: number) {
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
+		const { width, height } = canvas;
+		ctx.clearRect(0, 0, width, height);
+
+		for (let y = 0; y < height; y += blockSize) {
+			for (let x = 0; x < width; x += blockSize) {
+				const { data } = source.getImageData(x, y, blockSize, blockSize);
+				let r = 0;
+				let g = 0;
+				let b = 0;
+				let a = 0;
+				let count = 0;
+
+				// Skip transparent pixels so they don't darken the average.
+				for (let i = 0; i < data.length; i += 4) {
+					if (data[i + 3] > 0) {
+						r += data[i];
+						g += data[i + 1];
+						b += data[i + 2];
+						a += data[i + 3];
+						count++;
+					}
+				}
+
+				if (count > 0) {
+					ctx.fillStyle = `rgba(${Math.floor(r / count)}, ${Math.floor(g / count)}, ${Math.floor(b / count)}, ${Math.floor(a / count) / 255})`;
+					ctx.fillRect(x, y, blockSize, blockSize);
+				}
+			}
+		}
+	}
+
+	for (const figure of document.querySelectorAll<HTMLElement>('[data-pixelate]')) {
+		const canvas = figure.querySelector('canvas');
+		if (!canvas || !figure.dataset.src) continue;
+
+		const img = new Image();
+		img.onload = () => {
+			const buffer = document.createElement('canvas');
+			buffer.width = canvas.width;
+			buffer.height = canvas.height;
+			const source = buffer.getContext('2d', { willReadFrequently: true });
+			if (!source) return;
+			source.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+			const coarse = () => draw(canvas, source, COARSE);
+			const fine = () => draw(canvas, source, FINE);
+			coarse();
+			figure.addEventListener('mouseenter', fine);
+			figure.addEventListener('focus', fine);
+			figure.addEventListener('mouseleave', coarse);
+			figure.addEventListener('blur', coarse);
+		};
+		img.src = figure.dataset.src;
+	}
+</script>

@@ -1,0 +1,25 @@
+---
+const links = [
+	{ href: '/projects', label: 'projects' },
+	{ href: '/areas', label: 'areas' },
+	{ href: '/tools', label: 'tools' },
+	{ href: '/notes', label: 'notes' },
+	{ href: '/about', label: 'about' },
+];
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<header class="max-w-xl mx-auto pb-8 text-sm text-muted">
+	<nav aria-label="Main" class="flex flex-wrap gap-x-3 gap-y-1 border-b border-dashed border-muted pb-4">
+		<a href="/" aria-current={path === '/' ? 'page' : undefined}>ilboga</a>
+		{
+			links.map(({ href, label }) => (
+				<a href={href} aria-current={isCurrent(href) ? 'page' : undefined} class="aria-[current=page]:no-underline">
+					{label}
+				</a>
+			))
+		}
+	</nav>
+</header>
