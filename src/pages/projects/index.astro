@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getProjects, isArchived } from '../../lib/garden';
+
+const projects = (await getProjects()).filter((project) => !isArchived(project));
+---
+
+<Layout title="Projects · ilboga">
+	<h1 class="flex flex-col gap-y-3">
+		<span>Projects</span>
+		<small>Work with a goal and an end</small>
+	</h1>
+
+	<EntryList entries={projects} empty="No active projects." />
+
+	<p class="text-muted">Done and dropped projects are in the <a href="/archive">archive</a>.</p>
+</Layout>

@@ -1,0 +1,25 @@
+---
+// One line of linked references, e.g. "Areas: Server, Generative patterns".
+import { hrefOf, type GardenEntry } from '../lib/garden';
+
+interface Props {
+	label: string;
+	entries: GardenEntry[];
+}
+
+const { label, entries } = Astro.props;
+---
+
+{
+	entries.length > 0 && (
+		<p>
+			<span class="text-muted">{label}:</span>{' '}
+			{entries.map((entry, i) => (
+				<>
+					<a href={hrefOf(entry)}>{entry.data.title}</a>
+					{i < entries.length - 1 && ', '}
+				</>
+			))}
+		</p>
+	)
+}

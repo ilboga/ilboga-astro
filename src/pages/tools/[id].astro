@@ -1,0 +1,36 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import EntryList from '../../components/EntryList.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import { getTools, notesAboutTool, projectsUsingTool, resolve, type Tool } from '../../lib/garden';
+
+export async function getStaticPaths() {
+	return (await getTools()).map((tool) => ({ params: { id: tool.id }, props: { tool } }));
+}
+
+const { tool } = Astro.props as { tool: Tool };
+const { Content } = await render(tool);
+const areas = await resolve(tool.data.areas);
+const projects = await projectsUsingTool(tool.id);
+const notes = await notesAboutTool(tool.id);
+---
+
+<Layout title={`${tool.data.title} · ilboga`}>
+	<h1 class="flex flex-col gap-y-3">
+		<span>{tool.data.title}</span>
+		<small>{tool.data.kind}</small>
+	</h1>
+
+	<section class="flex flex-col gap-y-1">
+		{tool.data.url && <p><a href={tool.data.url}>{tool.data.url.replace(/^https?:\/\//, '')}</a></p>}
+		<RefLinks label="Areas" entries={areas} />
+	</section>
+
+	<div class="prose lg:prose-lg">
+		<Content />
+	</div>
+
+	<EntryList title="Used in" entries={projects} />
+	<EntryList title="Notes" entries={notes} />
+</Layout>

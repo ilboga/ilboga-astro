@@ -1,0 +1,34 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import EntryList from '../../components/EntryList.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import { getProjects, notesForProject, resolve, type Project } from '../../lib/garden';
+
+export async function getStaticPaths() {
+	return (await getProjects()).map((project) => ({ params: { id: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props as { project: Project };
+const { Content } = await render(project);
+const areas = await resolve(project.data.areas);
+const tools = await resolve(project.data.tools);
+const notes = await notesForProject(project.id);
+---
+
+<Layout title={`${project.data.title} · ilboga`} description={project.data.goal}>
+	<h1>{project.data.title}</h1>
+
+	<section class="flex flex-col gap-y-1">
+		<p class="mb-2">{project.data.goal}</p>
+		<p><span class="text-muted">Status:</span> {project.data.status}</p>
+		<RefLinks label="Areas" entries={areas} />
+		<RefLinks label="Tools" entries={tools} />
+	</section>
+
+	<div class="prose lg:prose-lg">
+		<Content />
+	</div>
+
+	<EntryList title="Notes" entries={notes} />
+</Layout>

@@ -1,0 +1,37 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import RefLinks from '../../components/RefLinks.astro';
+import { getNotes, resolve, type Note } from '../../lib/garden';
+
+export async function getStaticPaths() {
+	return (await getNotes()).map((note) => ({ params: { id: note.id }, props: { note } }));
+}
+
+const { note } = Astro.props as { note: Note };
+const { Content } = await render(note);
+const areas = await resolve(note.data.areas);
+const projects = await resolve(note.data.projects);
+const tools = await resolve(note.data.tools);
+---
+
+<Layout title={`${note.data.title} · ilboga`} description={note.data.summary}>
+	<h1>{note.data.title}</h1>
+
+	<section class="flex flex-col gap-y-1">
+		{note.data.summary && <p class="mb-2">{note.data.summary}</p>}
+		<p><span class="text-muted">Stage:</span> {note.data.stage}</p>
+		{note.data.source && (
+			<p>
+				<span class="text-muted">Source:</span> <a href={note.data.source}>{note.data.source.replace(/^https?:\/\//, '')}</a>
+			</p>
+		)}
+		<RefLinks label="Areas" entries={areas} />
+		<RefLinks label="Projects" entries={projects} />
+		<RefLinks label="Tools" entries={tools} />
+	</section>
+
+	<div class="prose lg:prose-lg">
+		<Content />
+	</div>
+</Layout>

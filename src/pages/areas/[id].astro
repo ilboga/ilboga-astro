@@ -1,0 +1,31 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getAreas, notesInArea, projectsInArea, type Area } from '../../lib/garden';
+
+export async function getStaticPaths() {
+	return (await getAreas()).map((area) => ({ params: { id: area.id }, props: { area } }));
+}
+
+const { area } = Astro.props as { area: Area };
+const { Content } = await render(area);
+const projects = await projectsInArea(area.id);
+const notes = await notesInArea(area.id);
+---
+
+<Layout title={`${area.data.title} · ilboga`} description={area.data.description}>
+	<h1>{area.data.title}</h1>
+
+	<section class="flex flex-col gap-y-1">
+		<p class="mb-2">{area.data.description}</p>
+		<p><span class="text-muted">What I want to understand:</span> {area.data.question}</p>
+	</section>
+
+	<div class="prose lg:prose-lg">
+		<Content />
+	</div>
+
+	<EntryList title="Projects" entries={projects} />
+	<EntryList title="Notes" entries={notes} />
+</Layout>

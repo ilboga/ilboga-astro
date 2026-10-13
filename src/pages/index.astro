@@ -1,11 +1,27 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import EntryList from '../components/EntryList.astro';
+import { getAreas, getNotes, getProjects, getTools, isArchived } from '../lib/garden';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const projects = (await getProjects()).filter((project) => !isArchived(project));
+const areas = await getAreas();
+const tools = await getTools();
+const notes = await getNotes();
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="ilboga · digital garden">
+	<h1 class="flex flex-col gap-y-3">
+		<span>Digital garden</span>
+		<small>Projects, areas, tools and notes</small>
+	</h1>
+
+	<p>
+		What I build, what I keep studying, what I build it with and what I learn along the way. Notes start as
+		seeds and grow as I come back to them. Finished projects move to the <a href="/archive">archive</a>.
+	</p>
+
+	<EntryList title="Projects" entries={projects} />
+	<EntryList title="Areas" entries={areas} />
+	<EntryList title="Tools" entries={tools} />
+	<EntryList title="Notes" entries={notes} />
 </Layout>

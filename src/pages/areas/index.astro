@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getAreas } from '../../lib/garden';
+
+const areas = await getAreas();
+---
+
+<Layout title="Areas · ilboga">
+	<h1 class="flex flex-col gap-y-3">
+		<span>Areas</span>
+		<small>What I keep tending, with no end date</small>
+	</h1>
+
+	<EntryList entries={areas} empty="No areas yet." />
+</Layout>

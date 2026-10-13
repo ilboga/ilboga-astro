@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import EntryList from '../../components/EntryList.astro';
+import { getTools } from '../../lib/garden';
+
+const tools = await getTools();
+---
+
+<Layout title="Tools · ilboga">
+	<h1 class="flex flex-col gap-y-3">
+		<span>Tools</span>
+		<small>What I build with, and notes on using it</small>
+	</h1>
+
+	<EntryList entries={tools} empty="No tools yet." />
+</Layout>

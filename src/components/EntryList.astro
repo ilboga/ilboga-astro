@@ -1,0 +1,29 @@
+---
+import Row from './Row.astro';
+import { hrefOf, metaOf, type GardenEntry } from '../lib/garden';
+
+interface Props {
+	title?: string;
+	entries: GardenEntry[];
+	empty?: string;
+}
+
+const { title, entries, empty } = Astro.props;
+---
+
+{
+	(entries.length > 0 || empty) && (
+		<section class="flex flex-col gap-y-3">
+			{title && <h2>{title}</h2>}
+			{entries.length > 0 ? (
+				<ol class="flex flex-col gap-y-2">
+					{entries.map((entry) => (
+						<Row title={entry.data.title} href={hrefOf(entry)} meta={metaOf(entry)} />
+					))}
+				</ol>
+			) : (
+				<p class="text-muted">{empty}</p>
+			)}
+		</section>
+	)
+}
